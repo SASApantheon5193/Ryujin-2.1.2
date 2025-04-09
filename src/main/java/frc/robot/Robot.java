@@ -15,6 +15,8 @@ import frc.robot.utilities.LimelightHelpers;
 import au.grapplerobotics.LaserCan;
 
 import au.grapplerobotics.ConfigurationFailedException;
+import frc.robot.subsystems.VisionSim;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -28,6 +30,8 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
+  private VisionSim m_visionSim;
+
 
   // Declare your subsystems (make it static if you intend to reference it from a static method)
   public static final DriveSubsystem driveSubsystem = new DriveSubsystem();
@@ -85,7 +89,9 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
-    
+    LimelightHelpers.SetRobotOrientation("limelight",
+    Robot.getRobotYaw(), 0, 0, 0, 0, 0);
+CommandScheduler.getInstance().run();
 
 LaserCan.Measurement measurement = lc.getMeasurement();
     if (measurement != null && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) {
@@ -167,4 +173,10 @@ LaserCan.Measurement measurement = lc.getMeasurement();
         BatterySim.calculateDefaultBatteryLoadedVoltage(
             m_robotContainer.getSimulationTotalCurrentDraw()));
   }
+
+  @Override
+public void simulationInit() {
+  m_visionSim = new VisionSim();
+}
+
 }

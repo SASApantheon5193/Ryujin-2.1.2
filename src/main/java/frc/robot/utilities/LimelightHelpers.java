@@ -1640,4 +1640,9 @@ public class LimelightHelpers {
 
         return results;
     }
+
+    public static double[] poseEstimateToBotPoseArray(PoseEstimate est) {
+        return pose2dToArray(est.pose);
+    }
+    
 }

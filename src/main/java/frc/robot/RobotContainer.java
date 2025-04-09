@@ -36,7 +36,8 @@ import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
  */
 public class RobotContainer {
   // The robot's subsystems
-  private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private final DriveSubsystem drive = Robot.driveSubsystem; // ✅ Use existing one
+
   private final CoralSubsystem m_coralSubSystem = new CoralSubsystem();
   private final ClimberSubsystem m_climber = new ClimberSubsystem();
   
@@ -90,16 +91,17 @@ public class RobotContainer {
 
     // Configure default commands
     {
-    m_robotDrive.setDefaultCommand(
-        new RunCommand(() -> {
+        drive.setDefaultCommand(
+          new RunCommand(() -> {
             int dpad = getDriverController().getPOV();
             if (dpad != -1) {
-                driveWithDPad(dpad);
+              driveWithDPad(dpad);
             } else {
-                driveWithJoystick();
+              driveWithJoystick();
             }
-        }, m_robotDrive));
-    }
+          }, drive));
+      }
+      
         // The left stick controls translation of the robot.
         // Turning is controlled by the X axis of the right stick.
       //  new RunCommand(
@@ -153,7 +155,8 @@ public void robotPeriodic() {
             ySpeed = -ySpeed;
         }
     
-        m_robotDrive.drive(xSpeed, ySpeed, rotation, false);
+        drive.drive(xSpeed, ySpeed, rotation, false);
+
     }
     
 
@@ -164,7 +167,8 @@ private void driveWithJoystick() {
     double rotation = -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband);
 
     // Call your robot drive method (ensure it's available for this use)
-    m_robotDrive.drive(xSpeed, ySpeed, rotation, true);  // Assuming this drives the robot field-centric
+    drive.drive(xSpeed, ySpeed, rotation, true);
+  // Assuming this drives the robot field-centric
 }
 
 
@@ -177,7 +181,7 @@ private void driveWithJoystick() {
    */
   private void configureButtonBindings() {
     // Left Stick Button -> Set swerve to X
-    m_driverController.leftStick().whileTrue(m_robotDrive.setXCommand());
+    m_driverController.leftStick().whileTrue(drive.setXCommand());
 
     // Left Bumper -> Run tube intake
     m_driverController.rightBumper().whileTrue(m_coralSubSystem.runIntakeCommand());
@@ -205,7 +209,7 @@ private void driveWithJoystick() {
     m_driverController.y().onTrue(m_coralSubSystem.setSetpointCommand(Setpoint.kLevel4));
     
     // Start Button -> Zero swerve heading
-    m_driverController.start().onTrue(m_robotDrive.zeroHeadingCommand());
+    m_driverController.start().onTrue(drive.zeroHeadingCommand());
 
     m_driverController.leftTrigger().whileTrue(new ClimberUpCommand(m_climber));
 
