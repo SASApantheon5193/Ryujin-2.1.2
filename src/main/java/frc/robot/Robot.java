@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.utilities.LimelightHelpers;
 import au.grapplerobotics.LaserCan;
 
 import au.grapplerobotics.ConfigurationFailedException;
@@ -27,6 +29,9 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
+  // Declare your subsystems (make it static if you intend to reference it from a static method)
+  public static final DriveSubsystem driveSubsystem = new DriveSubsystem();
+
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -41,15 +46,26 @@ public class Robot extends TimedRobot {
 
     lc = new LaserCan(0);
     // Optionally initialise the settings of the LaserCAN, if you haven't already done so in GrappleHook
-    try {
-      lc.setRangingMode(LaserCan.RangingMode.SHORT);
+    try {      lc.setRangingMode(LaserCan.RangingMode.SHORT);
       lc.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 16, 16));
       lc.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
     } catch (ConfigurationFailedException e) {
       System.out.println("Configuration failed! " + e);
     }
 
+    LimelightHelpers.SetRobotOrientation("limelight", Robot.getRobotYaw(), 0.0, 0.0, 0.0, 0.0, 0.0);
+
+
   }
+
+
+      // Define getRobotYaw() so that other classes can retrieve the robot's yaw.
+  // This example delegates to your DriveSubsystem's getHeading() method.
+  public static double getRobotYaw() {
+    // You could also perform any additional processing or unit conversions here if needed.
+    return driveSubsystem.getHeading();
+  }
+
 
   /**
    * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
@@ -106,6 +122,7 @@ LaserCan.Measurement measurement = lc.getMeasurement();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+    
   }
 
   /** This function is called periodically during autonomous. */
